@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 313888901}
   m_Layer: 0
   m_Name: Taller
-  m_TagString: Untagged
+  m_TagString: Area
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -864,8 +864,8 @@ MonoBehaviour:
   DoubleJumpLegs: {fileID: 292482672}
   RunLegs: {fileID: 384491174}
   PropellerLegs: {fileID: 1358200244}
-  Speed: 20
-  PropellerForce: 100
+  Speed: 10
+  PropellerForce: 1000
   Sensitivity: 2
   JumpForce: 600
   LegType: 0
