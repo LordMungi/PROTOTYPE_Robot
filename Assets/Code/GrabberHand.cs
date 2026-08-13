@@ -14,6 +14,8 @@ public class GrabberHand : MonoBehaviour
 
     private Vector3 _parentOffset;
 
+    private GameObject _grabbedObject;
+
 
     void Start()
     {
@@ -25,13 +27,20 @@ public class GrabberHand : MonoBehaviour
         if (_isGoing)
             Body.MovePosition(transform.position + _direction * Speed * Time.deltaTime);
         else if (_isReturning)
+        {
             Body.MovePosition(Vector3.MoveTowards(transform.position, Parent.position + _parentOffset, ReturnSpeed * Time.deltaTime));
+        }
     }
 
     void Update()
     {
         if (!_isGoing && !_isReturning)
             transform.position = Parent.position + _parentOffset;
+        else if (_isReturning)
+        {
+            if (_grabbedObject)
+                _grabbedObject.transform.position = transform.position;
+        }
     }
 
     public void Shoot(Vector3 direction)
@@ -62,11 +71,17 @@ public class GrabberHand : MonoBehaviour
         {
             _isGoing = false;
             _isReturning = false;
+            Destroy(_grabbedObject);
+            _grabbedObject = null;
         }
 
         else
         {
             Return();
+            if (other.CompareTag("Grabbable"))
+            {
+                _grabbedObject = other.gameObject;
+            }
         }
     }
 }
