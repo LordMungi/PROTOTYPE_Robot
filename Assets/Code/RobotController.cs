@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class RobotController : MonoBehaviour
 {
+    [Header("Properties")]
+    [SerializeField] private float throwForce;
+
+
     [Header("Components")]
     [SerializeField] private Rigidbody body;
     [SerializeField] private Transform feet;
@@ -39,7 +43,7 @@ public class RobotController : MonoBehaviour
     private bool _jumped = false;
     private bool _doubleJumped = false;
     private bool _jumpEnabled = true;
-    private LegPart _nearPart = null;
+    public LegPart _nearPart = null;
 
     void Start()
     {
@@ -51,7 +55,6 @@ public class RobotController : MonoBehaviour
         DoubleJumpLegs.SetActive(true);
         GrabberArms.SetActive(true);
 
-        _currentLegType = currentLegPart.type;
         ArmType = ArmTypes.Grabber;
     }
 
@@ -127,6 +130,14 @@ public class RobotController : MonoBehaviour
         transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * Time.deltaTime);
         #endregion
 
+        #region Throw
+        if (Input.GetMouseButtonDown(0) && _grabbedPart)
+        {
+            _grabbedPart.Throw(throwForce);
+            _grabbedPart = null;
+        }
+        #endregion
+
         /*
         #region Shoot
         if (Input.GetMouseButtonDown(0) && ArmType == ArmTypes.Grabber)
@@ -160,9 +171,18 @@ public class RobotController : MonoBehaviour
 
             currentLegPart = aux;
             currentLegPart.Grab(legPartSlot.transform);
+            _currentLegType = currentLegPart.type;
+
+        }
+        else if (currentLegPart)
+        {
+            _grabbedPart = currentLegPart;
+            _grabbedPart.Grab(partStash.transform);
+            currentLegPart = null;
+            _currentLegType = LegPart.LegTypes.NONE;
         }
 
-        _currentLegType = currentLegPart.type;
+
     }
 
     void EnableJump()
@@ -180,7 +200,7 @@ public class RobotController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PartArea"))
-            _nearPart = other.GetComponent<LegPart>();
+            _nearPart = other.transform.parent.gameObject.GetComponent<LegPart>();
 
     }
     private void OnTriggerExit(Collider other)

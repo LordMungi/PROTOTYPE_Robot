@@ -46,4 +46,11 @@ public class LegPart : MonoBehaviour
         _body.isKinematic = false;
         _body.detectCollisions = true;
     }
+
+    public void Throw(float power)
+    {
+        Vector3 auxForward = transform.forward;
+        Release();
+        _body.AddForce(auxForward * power);
+    }
 }
