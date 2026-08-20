@@ -45,7 +45,7 @@ public class RobotController : MonoBehaviour
     private bool _doubleJumped = false;
     private bool _jumpEnabled = true;
     private bool _isClimbing = false;
-    public LegPart _nearPart = null;
+    private LegPart _nearPart = null;
 
     void Start()
     {
@@ -169,6 +169,9 @@ public class RobotController : MonoBehaviour
         #region Rotation
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Sensitivity);
         #endregion
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
     void ApplyPart()
