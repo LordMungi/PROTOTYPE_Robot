@@ -7,6 +7,7 @@ public class RobotController : MonoBehaviour
     [SerializeField] private Transform feet;
     [SerializeField] private Camera cam;
     [SerializeField] private GameObject legPartSlot;
+    [SerializeField] private GameObject partStash;
 
     [Header("Parts")]
     [SerializeField] private LegPart currentLegPart;
@@ -31,7 +32,8 @@ public class RobotController : MonoBehaviour
     public float Sensitivity;
     public float JumpForce;
 
-    public LegPart.LegTypes _currentLegType;
+    private LegPart _grabbedPart = null;
+    private LegPart.LegTypes _currentLegType;
     private ArmTypes ArmType;
 
     private bool _jumped = false;
@@ -89,25 +91,35 @@ public class RobotController : MonoBehaviour
         #region Grab
         if (Input.GetKeyDown(KeyCode.E) && _nearPart)
         {
-            if (currentLegPart)
+            if (_grabbedPart)
+            {
+                _grabbedPart.Release();
+                _grabbedPart = null;
+            }
+
+            _grabbedPart = _nearPart;
+            _nearPart.Grab(partStash.transform);
+            _nearPart = null;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q) && (_grabbedPart || currentLegPart))
+        {
+            if (_grabbedPart)
+            {
+                _grabbedPart.Release();
+                _grabbedPart = null;
+            }
+            else
             {
                 currentLegPart.Release();
                 currentLegPart = null;
+                _currentLegType = LegPart.LegTypes.NONE;
             }
-
-            currentLegPart = _nearPart;
-            _currentLegType = currentLegPart.type;
-            _nearPart.Grab(legPartSlot.transform);
-            _nearPart = null;
         }
-        #endregion
 
-        #region Release
-        if (Input.GetKeyDown(KeyCode.Q) && currentLegPart)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            currentLegPart.Release();
-            currentLegPart = null;
-            _currentLegType = LegPart.LegTypes.NONE;
+            ApplyPart();
         }
         #endregion
 
@@ -128,6 +140,29 @@ public class RobotController : MonoBehaviour
         #region Rotation
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Sensitivity);
         #endregion
+    }
+
+    void ApplyPart()
+    {
+        LegPart aux;
+
+
+        if (_grabbedPart)
+        {
+            aux = _grabbedPart;
+            if (currentLegPart)
+            {
+                _grabbedPart = currentLegPart;
+                _grabbedPart.Grab(partStash.transform);
+            } 
+            else
+                _grabbedPart = null;
+
+            currentLegPart = aux;
+            currentLegPart.Grab(legPartSlot.transform);
+        }
+
+        _currentLegType = currentLegPart.type;
     }
 
     void EnableJump()
