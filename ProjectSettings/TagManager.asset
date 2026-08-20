@@ -7,6 +7,7 @@ TagManager:
   - Area
   - Grabbable
   - PartArea
+  - Climbable
   layers:
   - Default
   - TransparentFX

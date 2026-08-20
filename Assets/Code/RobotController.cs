@@ -35,6 +35,7 @@ public class RobotController : MonoBehaviour
     public float PropellerForce;
     public float Sensitivity;
     public float JumpForce;
+    public float ClimbSpeed;
 
     private LegPart _grabbedPart = null;
     private LegPart.LegTypes _currentLegType;
@@ -43,6 +44,7 @@ public class RobotController : MonoBehaviour
     private bool _jumped = false;
     private bool _doubleJumped = false;
     private bool _jumpEnabled = true;
+    private bool _isClimbing = false;
     public LegPart _nearPart = null;
 
     void Start()
@@ -126,10 +128,6 @@ public class RobotController : MonoBehaviour
         }
         #endregion
 
-        #region Move
-        transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * Time.deltaTime);
-        #endregion
-
         #region Throw
         if (Input.GetMouseButtonDown(0) && _grabbedPart)
         {
@@ -147,6 +145,26 @@ public class RobotController : MonoBehaviour
         }
         #endregion
         */
+
+        #region Climb
+        if (_isClimbing && _currentLegType == LegPart.LegTypes.Climb)
+        {
+            if (body.useGravity == true)
+                body.useGravity = false;
+
+            if (Input.GetKey(KeyCode.Space))
+                transform.Translate(Vector3.up * ClimbSpeed * Time.deltaTime);
+        }
+        else
+        {
+            if (body.useGravity == false)
+                body.useGravity = true;
+
+        }
+
+        #endregion
+
+        transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * Time.deltaTime);
 
         #region Rotation
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Sensitivity);
@@ -202,10 +220,16 @@ public class RobotController : MonoBehaviour
         if (other.CompareTag("PartArea"))
             _nearPart = other.transform.parent.gameObject.GetComponent<LegPart>();
 
+        if (other.CompareTag("Climbable"))
+            _isClimbing = true;
+
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("PartArea"))
             _nearPart = null;
+
+        if (other.CompareTag("Climbable"))
+            _isClimbing = false;
     }
 }
