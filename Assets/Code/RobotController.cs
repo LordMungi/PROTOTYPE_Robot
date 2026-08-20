@@ -6,8 +6,10 @@ public class RobotController : MonoBehaviour
     [SerializeField] private Rigidbody body;
     [SerializeField] private Transform feet;
     [SerializeField] private Camera cam;
+    [SerializeField] private GameObject legPartSlot;
 
     [Header("Parts")]
+    [SerializeField] private LegPart currentLegPart;
     [SerializeField] private GameObject DoubleJumpLegs;
     [SerializeField] private GameObject RunLegs;
     [SerializeField] private GameObject PropellerLegs;
@@ -17,12 +19,6 @@ public class RobotController : MonoBehaviour
     [Header("Elements")]
     [SerializeField] private GrabberHand Hand;
 
-    public enum LegTypes
-    {
-        DoubleJump,
-        Run,
-        Propeller
-    }
     public enum ArmTypes
     {
         Grabber,
@@ -35,13 +31,13 @@ public class RobotController : MonoBehaviour
     public float Sensitivity;
     public float JumpForce;
 
-    private LegTypes LegType;
+    public LegPart.LegTypes _currentLegType;
     private ArmTypes ArmType;
 
     private bool _jumped = false;
     private bool _doubleJumped = false;
     private bool _jumpEnabled = true;
-    private bool _isInTaller = false;
+    private LegPart _nearPart = null;
 
     void Start()
     {
@@ -53,35 +49,12 @@ public class RobotController : MonoBehaviour
         DoubleJumpLegs.SetActive(true);
         GrabberArms.SetActive(true);
 
-        LegType = LegTypes.DoubleJump;
+        _currentLegType = currentLegPart.type;
         ArmType = ArmTypes.Grabber;
     }
 
     void Update()
     {
-        #region Taller
-        if (_isInTaller)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                DisableLegs();
-                DoubleJumpLegs.SetActive(true);
-                LegType = LegTypes.DoubleJump;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                DisableLegs();
-                RunLegs.SetActive(true);
-                LegType = LegTypes.Run;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                DisableLegs();
-                PropellerLegs.SetActive(true);
-                LegType = LegTypes.Propeller;
-            }
-        }
-        #endregion
 
         #region Landing
         if (_jumpEnabled && Physics.Raycast(feet.position, -Vector3.up, 0.2f))
@@ -101,25 +74,48 @@ public class RobotController : MonoBehaviour
                 body.AddForce(new Vector3(0, JumpForce, 0));
                 _jumped = true;
             }
-            else if (!_doubleJumped && LegType == LegTypes.DoubleJump)
+            else if (!_doubleJumped && _currentLegType == LegPart.LegTypes.DoubleJump)
             {
                 body.AddForce(new Vector3(0, JumpForce, 0));
                 _doubleJumped = true;
             }
         }
-        if (Input.GetKey(KeyCode.Space) && _jumped && LegType == LegTypes.Propeller)
+        if (Input.GetKey(KeyCode.Space) && _jumped && _currentLegType == LegPart.LegTypes.Propeller)
         {
             body.AddForce(new Vector3(0, PropellerForce * Time.deltaTime, 0));
         }
         #endregion
 
-        #region Move
-        if (Input.GetKey(KeyCode.LeftShift) && LegType == LegTypes.Run)
-            transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * 2 * Time.deltaTime);
-        else
-            transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * Time.deltaTime);
+        #region Grab
+        if (Input.GetKeyDown(KeyCode.E) && _nearPart)
+        {
+            if (currentLegPart)
+            {
+                currentLegPart.Release();
+                currentLegPart = null;
+            }
+
+            currentLegPart = _nearPart;
+            _currentLegType = currentLegPart.type;
+            _nearPart.Grab(legPartSlot.transform);
+            _nearPart = null;
+        }
         #endregion
 
+        #region Release
+        if (Input.GetKeyDown(KeyCode.Q) && currentLegPart)
+        {
+            currentLegPart.Release();
+            currentLegPart = null;
+            _currentLegType = LegPart.LegTypes.NONE;
+        }
+        #endregion
+
+        #region Move
+        transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Speed * Time.deltaTime);
+        #endregion
+
+        /*
         #region Shoot
         if (Input.GetMouseButtonDown(0) && ArmType == ArmTypes.Grabber)
         {
@@ -127,6 +123,7 @@ public class RobotController : MonoBehaviour
             Debug.DrawRay(GrabberArms.transform.position, cam.transform.forward * 1000);
         }
         #endregion
+        */
 
         #region Rotation
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Sensitivity);
@@ -147,12 +144,13 @@ public class RobotController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.CompareTag("Area"))
-            _isInTaller = true;
+        if (other.CompareTag("PartArea"))
+            _nearPart = other.GetComponent<LegPart>();
+
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.transform.CompareTag("Area"))
-            _isInTaller = false;
+        if (other.CompareTag("PartArea"))
+            _nearPart = null;
     }
 }
