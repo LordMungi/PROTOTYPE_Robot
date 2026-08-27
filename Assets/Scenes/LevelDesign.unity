@@ -4173,6 +4173,10 @@ PrefabInstance:
       value: 750
       objectReference: {fileID: 0}
     - target: {fileID: 6617304492897054888, guid: e80f687853e0039459aa1a82bdf6b449, type: 3}
+      propertyPath: DoubleJumpForce
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6617304492897054888, guid: e80f687853e0039459aa1a82bdf6b449, type: 3}
       propertyPath: onLegPartGrabbed
       value: 
       objectReference: {fileID: 11400000, guid: 562bf55fbdc1a6b4ab95411e265c022a, type: 2}

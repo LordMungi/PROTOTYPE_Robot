@@ -38,6 +38,7 @@ public class RobotController : MonoBehaviour
     public float PropellerForce;
     public float Sensitivity;
     public float JumpForce;
+    public float DoubleJumpForce;
     public float ClimbSpeed;
 
     private LegPart _grabbedPart = null;
@@ -87,7 +88,8 @@ public class RobotController : MonoBehaviour
             }
             else if (!_doubleJumped && _currentLegType == LegPart.LegTypes.DoubleJump)
             {
-                body.AddForce(new Vector3(0, JumpForce, 0));
+                body.linearVelocity = Vector3.zero;
+                body.AddForce(new Vector3(0, DoubleJumpForce, 0));
                 _doubleJumped = true;
             }
         }
