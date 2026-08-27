@@ -499,6 +499,7 @@ GameObject:
   - component: {fileID: 6802761526182096695}
   - component: {fileID: 6617304492897054888}
   - component: {fileID: 5283018458808008134}
+  - component: {fileID: 8967022464492996183}
   m_Layer: 7
   m_Name: Robot
   m_TagString: Player
@@ -556,7 +557,6 @@ MonoBehaviour:
   Sensitivity: 2
   JumpForce: 600
   ClimbSpeed: 20
-  _nearPart: {fileID: 0}
 --- !u!54 &5283018458808008134
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -584,6 +584,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!65 &8967022464492996183
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6249261739741211288}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6492081, y: 2.070021, z: 1.3010316}
+  m_Center: {x: 0.040712357, y: 0.53501034, z: 0.010476828}
 --- !u!1 &7123171786678403659
 GameObject:
   m_ObjectHideFlags: 0
