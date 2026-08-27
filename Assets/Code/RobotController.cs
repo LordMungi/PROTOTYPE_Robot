@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RobotController : MonoBehaviour
@@ -24,6 +25,8 @@ public class RobotController : MonoBehaviour
     [Header("Elements")]
     [SerializeField] private GrabberHand Hand;
 
+    [Header("Broadcast Events")]
+    [SerializeField] private LegPartEventChannel onLegPartGrabbed;
     public enum ArmTypes
     {
         Grabber,
@@ -46,6 +49,7 @@ public class RobotController : MonoBehaviour
     private bool _jumpEnabled = true;
     private bool _isClimbing = false;
     private LegPart _nearPart = null;
+
 
     void Start()
     {
@@ -104,6 +108,7 @@ public class RobotController : MonoBehaviour
 
             _grabbedPart = _nearPart;
             _nearPart.Grab(partStash.transform);
+            onLegPartGrabbed.RaiseEvent(_nearPart);
             _nearPart = null;
         }
 
