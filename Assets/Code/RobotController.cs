@@ -49,7 +49,7 @@ public class RobotController : MonoBehaviour
     private bool _doubleJumped = false;
     private bool _jumpEnabled = true;
     private bool _isClimbing = false;
-    private LegPart _nearPart = null;
+    private List<LegPart> _nearParts = new List<LegPart>();
 
 
     void Start()
@@ -100,7 +100,7 @@ public class RobotController : MonoBehaviour
         #endregion
 
         #region Grab
-        if (Input.GetKeyDown(KeyCode.E) && _nearPart)
+        if (Input.GetKeyDown(KeyCode.E) && _nearParts.Count > 0)
         {
             if (_grabbedPart)
             {
@@ -108,10 +108,10 @@ public class RobotController : MonoBehaviour
                 _grabbedPart = null;
             }
 
-            _grabbedPart = _nearPart;
-            _nearPart.Grab(partStash.transform);
-            onLegPartGrabbed.RaiseEvent(_nearPart);
-            _nearPart = null;
+            _grabbedPart = _nearParts[0];
+            _nearParts[0].Grab(partStash.transform);
+            onLegPartGrabbed.RaiseEvent(_nearParts[0]);
+            _nearParts.Remove(_grabbedPart);
         }
 
         if (Input.GetKeyDown(KeyCode.Q) && (_grabbedPart || currentLegPart))
@@ -228,7 +228,7 @@ public class RobotController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PartArea"))
-            _nearPart = other.transform.parent.gameObject.GetComponent<LegPart>();
+            _nearParts.Add(other.transform.parent.gameObject.GetComponent<LegPart>());
 
         if (other.CompareTag("Climbable"))
             _isClimbing = true;
@@ -237,7 +237,11 @@ public class RobotController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("PartArea"))
-            _nearPart = null;
+        {
+            LegPart part = other.transform.parent.gameObject.GetComponent<LegPart>();
+            if (_nearParts.Contains(part))
+                _nearParts.Remove(part);
+        }
 
         if (other.CompareTag("Climbable"))
             _isClimbing = false;
