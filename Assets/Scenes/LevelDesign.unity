@@ -2036,7 +2036,7 @@ Transform:
   m_GameObject: {fileID: 773984971}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.2762453, z: -0, w: 0.96108717}
-  m_LocalPosition: {x: 0.4, y: 8.9, z: -32.3}
+  m_LocalPosition: {x: 0.4, y: 9.35, z: -32.3}
   m_LocalScale: {x: -2.3697643, y: 29.765224, z: 1.9693937}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4174,7 +4174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6617304492897054888, guid: e80f687853e0039459aa1a82bdf6b449, type: 3}
       propertyPath: DoubleJumpForce
-      value: 1000
+      value: 750
       objectReference: {fileID: 0}
     - target: {fileID: 6617304492897054888, guid: e80f687853e0039459aa1a82bdf6b449, type: 3}
       propertyPath: onLegPartGrabbed
